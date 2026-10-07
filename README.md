@@ -4,7 +4,7 @@ Caso práctico sobre **Aprende Fonemas**, una app Android de conciencia fonológ
 
 > **El código fuente es privado.** Este repositorio no contiene código, ilustraciones ni audios de la app. Documenta el producto y las decisiones técnicas que se tomaron para construirlo y publicarlo. Todos los datos que aparecen se pueden contrastar con la ficha de Google Play, la web o el repositorio privado.
 
-![Portada de aprendefonemas.netlify.app](assets/web-portada.png)
+![Portada de aprendefonemas.netlify.app]web-portada.png
 
 ---
 
@@ -118,7 +118,7 @@ En resumen: primero se reconocen sonidos y letras (1–4), luego se trabaja la s
 - aloja la [política de privacidad](https://aprendefonemas.netlify.app/privacidad.html) que exige Google Play;
 - enlaza a la ficha de Google Play y al contacto, aprendefonemas@gmail.com.
 
-<p align="center"><img src="assets/web-movil.png" alt="Web en móvil" width="280"></p>
+<p align="center"><img src="web-movil.png" alt="Web en móvil" width="280"></p>
 
 ---
 
