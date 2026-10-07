@@ -4,7 +4,7 @@ Caso práctico sobre **Aprende Fonemas**, una app Android de conciencia fonológ
 
 > **El código fuente es privado.** Este repositorio no contiene código, ilustraciones ni audios de la app. Documenta el producto y las decisiones técnicas que se tomaron para construirlo y publicarlo. Todos los datos que aparecen se pueden contrastar con la ficha de Google Play, la web o el repositorio privado.
 
-![Portada de aprendefonemas.netlify.app]web-portada.png
+![Portada de aprendefonemas.netlify.app](web-portada.png)
 
 ---
 
