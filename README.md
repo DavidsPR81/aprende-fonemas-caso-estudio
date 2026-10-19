@@ -17,8 +17,9 @@ Caso práctico sobre **Aprende Fonemas**, una app Android de conciencia fonológ
 5. [La web](#la-web)
 6. [Stack](#stack)
 7. [Resultados verificables](#resultados-verificables)
-8. [Lo aprendido](#lo-aprendido)
-9. [Autor](#autor)
+8. [Versión 1.1: que vuelvan](#versión-11-que-vuelvan)
+9. [Lo aprendido](#lo-aprendido)
+10. [Autor](#autor)
 
 ---
 
@@ -81,7 +82,7 @@ En resumen: primero se reconocen sonidos y letras (1–4), luego se trabaja la s
 
 - Un único producto de compra (`premium_unlock`), sin suscripciones, integrado con Google Play Billing.
 - Antes de iniciar la compra aparece una **puerta para adultos**, para que el niño no llegue al pago por accidente.
-- La integración de pagos usa `react-native-iap` 12 con un parche propio y un plugin de configuración de Expo para el permiso de facturación de Play.
+- En la versión 1.0 la integración de pagos usaba `react-native-iap` 12 con un parche propio y un plugin de configuración de Expo para el permiso de facturación de Play. En la 1.1 se sustituye por `expo-iap` 6.1.1 (Google Play Billing 9.1), sin parches.
 - La lógica de Premium y la distribución de las pantallas Premium tienen pruebas automatizadas propias.
 
 ### Cumplimiento de la Política de Familias de Google Play
@@ -126,12 +127,14 @@ En resumen: primero se reconocen sonidos y letras (1–4), luego se trabaja la s
 
 | Área | Tecnología |
 |---|---|
-| App | React Native 0.81.5, React 19.1, Expo SDK 54 |
+| App | v1.0: React Native 0.81.5, React 19.1, Expo SDK 54 · v1.1: React Native 0.86.3 (Nueva Arquitectura), React 19.2, Expo SDK 57 |
 | Plataforma | Android (móvil y tablet) |
-| Pagos | Google Play Billing con `react-native-iap` 12 (parcheado) |
+| Audio | v1.0: `expo-av` · v1.1: `expo-audio` con caché local de los MP3 |
+| Pagos | v1.0: Google Play Billing con `react-native-iap` 12 (parcheado) · v1.1: `expo-iap` 6.1.1 (Billing 9.1) |
+| Recordatorio (v1.1) | Módulo nativo propio (Kotlin y Swift), notificación local, sin Firebase |
 | Datos | Almacenamiento local en el dispositivo, sin backend |
-| Calidad | Jest (tests de lógica y de contenido pedagógico) |
-| Builds | EAS Build |
+| Calidad | Jest (tests de lógica y de contenido pedagógico; 928 tests en la v1.1) |
+| Builds | EAS Build · R8 activado en la v1.1 |
 | Web | HTML y CSS estáticos en Netlify |
 
 ---
@@ -148,6 +151,54 @@ En resumen: primero se reconocen sonidos y letras (1–4), luego se trabaja la s
 
 ---
 
+## Versión 1.1: que vuelvan
+
+> **Estado (octubre de 2026): en prueba cerrada en Google Play.** Todavía no hay datos de la versión 1.1 en producción.
+
+### El problema, con datos
+
+Datos de Play Console de los 90 días anteriores al 12 de octubre de 2026 (versión 1.0):
+
+| Dato | Valor |
+|---|---|
+| Impresiones en la ficha | 2.240 |
+| Instalaciones | 96 (50,86 % de quienes ven la ficha) |
+| Primeras aperturas | 58 (**el 40 % instala y no abre la app**) |
+| Usuarios activos al mes | 56 |
+| Retención a 7 días | **1 dispositivo** |
+
+La ficha convierte bien. Lo que falla es **la primera apertura** y, sobre todo, **la vuelta**: casi nadie juega una segunda semana.
+
+### Decisiones
+
+- **Retención antes que captación.** No tiene sentido pagar por instalaciones si los niños no vuelven. La 1.1 se centra en abrir la app, empezar rápido y volver al día siguiente.
+- **Sin anuncios y sin datos, también ahora.** Nada de analítica ni de SDK de terceros para medir: las métricas salen solo de Play Console. La sección de seguridad de datos sigue en «no se recogen datos».
+- **Recordatorio local sin Firebase.** Un aviso push habitual necesita Firebase Cloud Messaging y un servicio externo, que encaja mal con la Política de Familias y con «no se recogen datos». Se hizo un módulo nativo propio que programa el aviso en el propio móvil: sin servidores, sin internet y sin alarmas exactas. Es opcional, viene apagado y lo activa un adulto; los únicos permisos nuevos son `POST_NOTIFICATIONS` y `RECEIVE_BOOT_COMPLETED`.
+- **Motivar sin castigar.** La racha se cuenta como «semana de la estrella»: un día sin jugar no muestra nada negativo.
+
+### Lo implementado
+
+- **Empezar con un toque:** Inicio con «Continuar · Nivel X», o «¡A repasar!» cuando no queda ningún nivel por hacer; pantalla de carga más corta.
+- **Partida de hoy:** repaso corto de 7 retos que mezcla los niveles completados.
+- **La semana de la estrella** (de lunes a domingo, en Progreso) y celebraciones a los 3, 5 y 7 días seguidos.
+- **Tutorial nuevo** de 5 pasos con dibujos y **primer ejercicio guiado** con una mano que señala.
+- **Guía para familias** en Ajustes y, al terminar una partida, una frase para el adulto con las letras practicadas.
+- **Álbum de letras** en Progreso y **prueba gratis del nivel 5** (una partida) para mostrar qué incluye Premium.
+- **Más variedad:** mezcla justa (Fisher-Yates) y memoria de lo ya visto de 30 elementos por nivel durante 7 días.
+- **Petición de valoración** solo detrás de la puerta para adultos.
+- **Técnica:** Expo SDK 57 y React Native 0.86 (Nueva Arquitectura), `expo-audio` con caché, `expo-iap` 6.1.1, R8, pantalla completa de Android 15 (edge-to-edge) y 928 tests.
+
+### Métricas pendientes
+
+Se medirán en Play Console cada 2 semanas tras publicar la 1.1 en producción. **Aún no hay resultados**:
+
+- porcentaje de instalaciones que llegan a abrir la app (punto de partida: 58 de 96);
+- retención a 1 y a 7 días (punto de partida a 7 días: 1 dispositivo);
+- usuarios activos al mes;
+- compras de Premium.
+
+---
+
 ## Lo aprendido
 
 - **La privacidad infantil se diseña desde el principio.** Sin cuentas, sin red y sin analítica, la seguridad de datos de la tienda queda en «no se recogen datos» sin tener que justificar excepciones.
@@ -156,6 +207,8 @@ En resumen: primero se reconocen sonidos y letras (1–4), luego se trabaja la s
 - **Las actualizaciones no pueden borrar el progreso.** Migrar los datos guardados entre versiones es necesario aunque todo viva en el dispositivo.
 - **La variante del idioma importa.** Respetar la fonética del español de España condiciona el audio y la elección de las palabras.
 - **La web es parte del producto.** Explica el modelo con claridad y cumple el requisito de política de privacidad de la tienda.
+- **Publicar no es el final.** Los datos de Play Console mostraron que el problema no era la ficha sino la vuelta; la 1.1 nace de ahí.
+- **Respetar la privacidad también limita las herramientas.** Un recordatorio sin Firebase obligó a escribir un módulo nativo pequeño, pero mantiene la app sin datos y sin servicios externos.
 
 ---
 
